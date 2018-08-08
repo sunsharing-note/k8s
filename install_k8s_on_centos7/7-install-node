@@ -62,6 +62,13 @@ contexts:
 current-context: service-account-context
 EOF
 
+# config配置文件
+cat <<EOF >>/etc/kubernets/config
+KUBE_LOGTOSTDERR="--logtostderr=true"
+KUBE_LOG_LEVEL="--v=3"
+KUBE_ALLOW_PRIV="--allow-privileged=false"
+#KUBE_MASTER="--master=http://192.168.29.102:8080" 版本不支持了
+EOF
 # 启动 需要先启动docker
 systemctl daemon-reload && systemctl start kubelet.service && systemctl enable kubelet.service
 
