@@ -1,0 +1,124 @@
+#  基础环境配置
+# 关闭防火墙 master and node
+systemctl status firewalld.service && systemctl stop  firewalld.service && systemctl disable firewalld.service
+
+# 关闭selinux master and node 
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g'/etc/selinux/config # 重启一下 master and node
+
+
+# 配置本地yum master and node
+mount /dev/cdrom /mnt
+cat <<EOF >>/etc/yum.repos.d/mnt.repo
+[mnt]
+name = centos 7 server
+baseurl=file:///mnt
+enabled=1
+gpgcheck=0
+EOF
+
+# 配置阿里云 后面用来安装docker-ce-18.03.0.ce node
+cat <<EOF >>/etc/yum.repos.d/docker-ce.repo
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-debuginfo]
+name=Docker CE Stable - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-source]
+name=Docker CE Stable - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge]
+name=Docker CE Edge - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge-debuginfo]
+name=Docker CE Edge - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge-source]
+name=Docker CE Edge - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test]
+name=Docker CE Test - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-debuginfo]
+name=Docker CE Test - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-source]
+name=Docker CE Test - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly]
+name=Docker CE Nightly - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-debuginfo]
+name=Docker CE Nightly - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-source]
+name=Docker CE Nightly - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+EOF
+
+
+# 这里我使用了ssh免密 仅是为了传文件 master
+ssh-keygen -t rsa 三次回车
+ssh-copy-id root@192.168.29.102  ssh-copy-id root@192.168.29.103
+
+# 添加hostname至/etc/hosts master and node
+echo "192.168.29.101 ansible-k8s1" >>/etc/hosts
+echo "192.168.29.102 ansible-k8s2" >>/etc/hosts
+echo "192.168.29.103 ansible-k8s3" >>/etc/hosts
+
+
+# 下载所需文件 master
+
+mkdir /data && cd /data
+
+wget https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz
+wget https://dl.k8s.io/v1.9.9/kubernetes-server-linux-amd64.tar.gz
+wget https://dl.k8s.io/v1.9.9/kubernetes-node-linux-amd64.tar.gz
+wget https://dl.k8s.io/v1.9.9/kubernetes-client-linux-amd64.tar.gz
