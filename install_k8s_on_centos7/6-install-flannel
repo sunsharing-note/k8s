@@ -1,0 +1,117 @@
+# install flannel  node
+
+# 直接使用Yum安装
+
+yum -y install flannel
+
+# system启动文件
+
+cat <<EOF >>cat /lib/systemd/system/flanneld.service
+[Unit]
+Description=Flanneld overlay address etcd agent
+After=network.target
+After=network-online.target
+Wants=network-online.target
+After=etcd.service
+Before=docker.service
+
+[Service]
+Type=notify
+EnvironmentFile=/etc/sysconfig/flanneld
+EnvironmentFile=-/etc/sysconfig/docker-network
+ExecStart=/usr/bin/flanneld-start \
+  -etcd-endpoints=${FLANNEL_ETCD_ENDPOINTS} \
+  -etcd-prefix=${FLANNEL_ETCD_PREFIX} \
+  $FLANNEL_OPTIONS
+ExecStartPost=/usr/libexec/flannel/mk-docker-opts.sh -k DOCKER_NETWORK_OPTIONS -d /run/flannel/docker
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=docker.service
+EOF
+
+# flanneld配置文件
+cat <<EOF >>/etc/sysconfig/flanneld
+# Flanneld configuration options
+
+# etcd url location.  Point this to the server where etcd runs
+FLANNEL_ETCD_ENDPOINTS="https://192.168.29.101:2379,https://192.168.29.102:2379,https://192.168.29.103:2379"
+
+# etcd config key.  This is the configuration key that flannel queries
+# For address range assignment
+FLANNEL_ETCD_PREFIX="/kube-centos/network"
+
+# Any additional options that you want to pass
+FLANNEL_OPTIONS="-etcd-cafile=/etc/kubernetes/ssl/ca.pem -etcd-certfile=/etc/kubernetes/ssl/kubernetes.pem -etcd-keyfile=/etc/kubernetes/ssl/kubernetes-key.pem"
+EOF
+
+# 安装docker
+yum -y install docker-ce-18.03.0.ce
+
+# docker system服务器启动配置修改
+cat <<EOF >>/usr/lib/systemd/system/docker.service
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network-online.target firewalld.service
+Wants=network-online.target
+
+[Service]
+Type=notify
+# the default is not to use systemd for cgroups because the delegate issues still
+# exists and systemd currently does not support the cgroup feature set required
+# for containers run by docker
+EnvironmentFile=-/run/flannel/docker
+EnvironmentFile=-/run/flannel/subnet.env
+ExecStart=/usr/bin/dockerd $DOCKER_NETWORK_OPTIONS
+ExecReload=/bin/kill -s HUP $MAINPID
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+# Uncomment TasksMax if your systemd version supports it.
+# Only systemd 226 and above support this version.
+#TasksMax=infinity
+TimeoutStartSec=0
+# set delegate yes so that systemd does not reset the cgroups of docker containers
+Delegate=yes
+# kill only the docker process, not all processes in the cgroup
+KillMode=process
+# restart the docker process if it exits prematurely
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启动 验证 先启动flannel 再启动docker
+for service in flanneld.service docker.service;do systemctl daemon-reload && systemctl start  $service;done
+[root@ansible-k8s2 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:19:3b:8f brd ff:ff:ff:ff:ff:ff
+    inet 192.168.29.102/24 brd 192.168.29.255 scope global ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c1f1:7fe0:7c7a:78da/64 scope link
+       valid_lft forever preferred_lft forever
+    inet6 fe80::8524:7426:7ca3:43f3/64 scope link tentative dadfailed
+       valid_lft forever preferred_lft forever
+3: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN
+    link/ether 4a:c4:ad:bb:59:97 brd ff:ff:ff:ff:ff:ff
+    inet 172.30.42.0/32 scope global flannel.1
+       valid_lft forever preferred_lft forever
+4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP
+    link/ether 02:42:5c:dc:47:6f brd ff:ff:ff:ff:ff:ff
+    inet 172.30.42.1/24 brd 172.30.42.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:5cff:fedc:476f/64 scope link
+       valid_lft forever preferred_lft forever
