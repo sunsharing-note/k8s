@@ -1,0 +1,111 @@
+# install node  node
+
+# 解压 复制 
+
+tar -zxvf kubernetes-node-linux-amd64.tar.gz && cp kubernetes/node/bin/kube* /usr/bin
+
+# system启动文件
+
+cat <<EOF >>/lib/systemd/system/kubelet.service
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service #
+Requires=docker.service
+[Service]
+WorkingDirectory=/var/lib/kubelet
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/kubelet
+ExecStart=/usr/bin/kubelet \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBELET_API_SERVER \
+        $KUBELET_ADDRESS \
+        $KUBELET_PORT \
+        $KUBELET_HOSTNAME \
+        $KUBE_ALLOW_PRIV \
+        $KUBELET_POD_INFRA_CONTAINER \
+        $KUBELET_ARGS
+Restart=on-failure
+KillMode=process
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 配置文件
+
+cat <<EOF >>/etc/kubernetes/kubelet
+KUBELET_ADDRESS="--address=192.168.29.102"
+KUBELET_HOSTNAME="--hostname-override=192.168.29.102"
+#KUBELET_API_SERVER="--api-servers=http://192.168.29.102:8080"
+#otstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
+# pod infrastructure container
+KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"
+KUBELET_ARGS="--enable-server=true  --enable-debugging-handlers=true --fail-swap-on=false --cluster-dns=10.254.0.2 --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig  --kubeconfig=/var/lib/kubelet/kubeconfig --require-kubeconfig --cert-dir=/etc/kubernetes/ssl --cluster-domain=cluster.local --hairpin-mode promiscuous-bridge --serialize-image-pulls=false"
+#KUBELET_ARGS="--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice --cluster-dns=10.254.0.2 --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig --kubeconfig=/var/lib/kubelet/kubeconfig --require-kubeconfig --cert-dir=/etc/kubernetes/ssl --cluster-domain=cluster.local --hairpin-mode promiscuous-bridge --serialize-image-pulls=false"
+EOF
+
+cat <<EOF >>/var/lib/kubelet/kubeconfig
+apiVersion: v1
+kind: Config
+users:
+- name: kubelet
+clusters:
+- name: kubernetes
+  cluster:
+    server: https://192.168.29.101:6443
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubelet
+  name: service-account-context
+current-context: service-account-context
+EOF
+
+# 启动 需要先启动docker
+systemctl daemon-reload && systemctl start kubelet.service && systemctl enable kubelet.service
+
+# 在master查看
+$ kubectl get csr
+NAME        AGE       REQUESTOR           CONDITION
+csr-2b308   4m        kubelet-bootstrap   Pending
+$ kubectl get nodes
+No resources found.
+
+$ kubectl certificate approve csr-2b308
+certificatesigningrequest "csr-2b308" approved
+[root@ansible-k8s1 data]# kubectl get nodes
+NAME             STATUS    ROLES     AGE       VERSION
+192.168.29.102   Ready     <none>    1d        v1.9.9
+192.168.29.103   Ready     <none>    1d        v1.9.9
+
+
+# kube-proxy配置文件
+
+cat <<EOF >>/etc/kubernetes/proxy
+KUBE_PROXY_ARGS="--bind-address=192.168.29.102 --hostname-override=192.168.29.102 --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig --cluster-cidr=10.254.0.0/16"
+EOF
+
+# system启动文件
+
+cat <<EOF >>/lib/systemd/system/kube-proxy.service
+[Unit]
+Description=Kubernetes Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+[Service]
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/proxy
+ExecStart=/usr/bin/kube-proxy \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBE_MASTER \
+        $KUBE_PROXY_ARGS
+Restart=on-failure
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启动 验证 
+systemctl daemon-reload && systemctl start kube-proxy.service && systemctl enable kube-proxy.service && systemctl status kube-proxy.service
