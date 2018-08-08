@@ -1,0 +1,8 @@
+KUBELET_ADDRESS="--address=192.168.29.103"
+KUBELET_HOSTNAME="--hostname-override=192.168.29.103"
+#KUBELET_API_SERVER="--api-servers=http://192.168.29.102:8080"
+#otstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig 
+# pod infrastructure container
+KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"
+KUBELET_ARGS="--enable-server=true  --enable-debugging-handlers=true --fail-swap-on=false --cluster-dns=10.254.0.2 --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig  --kubeconfig=/var/lib/kubelet/kubeconfig --require-kubeconfig --cert-dir=/etc/kubernetes/ssl --cluster-domain=cluster.local --hairpin-mode promiscuous-bridge --serialize-image-pulls=false"
+#KUBELET_ARGS="--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice --cluster-dns=10.254.0.2 --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig --kubeconfig=/var/lib/kubelet/kubeconfig --require-kubeconfig --cert-dir=/etc/kubernetes/ssl --cluster-domain=cluster.local --hairpin-mode promiscuous-bridge --serialize-image-pulls=false"
