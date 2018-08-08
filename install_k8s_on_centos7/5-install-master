@@ -1,0 +1,158 @@
+# install k8s master 
+
+# 解压 复制 
+tar -zxvf   kubernetes-server-linux-amd64.tar.gz         && cd kubernetes/server/bin/
+cp -r server/bin/{kube-apiserver,kube-controller-manager,kube-scheduler,kubectl,kube-proxy,kubelet} /usr/bin/
+
+
+# system启动文件
+
+cat <<EOF >>/lib/systemd/system/kube-apiserver.service
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+After=etcd.service
+Wants=etcd.service
+[Service]
+User=root
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/apiserver
+ExecStart=/usr/bin/kube-apiserver \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBE_ETCD_SERVERS \
+        $KUBE_API_ADDRESS \
+        $KUBE_API_PORT \
+        $KUBELET_PORT \
+        $KUBE_ALLOW_PRIV \
+        $KUBE_SERVICE_ADDRESSES \
+        $KUBE_ADMISSION_CONTROL \
+        $KUBE_API_ARGS
+Restart=on-failure
+Type=notify
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# config文件
+
+cat <<EOF >>/etc/kubernetes/config
+KUBE_LOGTOSTDERR="--logtostderr=true"
+KUBE_LOG_LEVEL="--v=0"
+KUBE_ALLOW_PRIV="--allow-privileged=false"
+KUBE_MASTER="--master=http://192.168.29.101:8080"
+EOF
+
+# apiserver文件
+
+cat <<EOF >>/etc/kubernetes/apiserver
+#
+# The following values are used to configure the kube-apiserver
+#
+# The address on the local server to listen to.
+#KUBE_API_ADDRESS="--address=0.0.0.0"
+KUBE_API_ADDRESS="--advertise-address=192.168.29.101 --bind-address=192.168.29.101 --insecure-bind-address=192.168.29.101"
+# The port on the local server to listen on.
+KUBE_API_PORT="--port=8080"
+# Port minions listen on
+#KUBELET_PORT="--kubelet-port=10250"
+# Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS="--etcd-servers=https://192.168.29.101:2379,https://192.168.29.102:2379,https://192.168.29.103:2379"
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=10.254.0.0/16"
+# default admission control policies
+KUBE_ADMISSION_CONTROL="--admission-control=ServiceAccount,NamespaceLifecycle,NamespaceExists,LimitRanger,ResourceQuota"
+# Add your own!
+KUBE_API_ARGS="--authorization-mode=Node,RBAC --runtime-config=rbac.authorization.k8s.io/v1beta1 --kubelet-https=true --enable-bootstrap-token-auth --token-auth-file=/etc/kubernetes/token.csv --service-node-port-range=30000-32767 --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem --client-ca-file=/etc/kubernetes/ssl/ca.pem --service-account-key-file=/etc/kubernetes/ssl/ca-key.pem --etcd-cafile=/etc/kubernetes/ssl/ca.pem --etcd-certfile=/etc/kubernetes/ssl/kubernetes.pem --etcd-keyfile=/etc/kubernetes/ssl/kubernetes-key.pem --enable-swagger-ui=true --apiserver-count=3 --audit-log-maxage=30 --audit-log-maxbackup=3 --audit-log-maxsize=100 --audit-log-path=/var/lib/audit.log --event-ttl=1h"
+EOF
+
+# kubeconfig文件
+
+cat <<EOF >>/var/lib/kubelet/kubeconfig
+apiVersion: v1
+kind: Config
+users:
+- name: kubelet
+clusters:
+- name: kubernetes
+  cluster:
+    server: https://192.168.29.101:6443
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubelet
+  name: service-account-context
+current-context: service-account-context
+EOF
+
+# kube-controller-manager启动文件
+
+cat <<EOF >>/usr/lib/systemd/system/kube-controller-manager.service
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=etcd.service
+After=kube-apiserver.service
+Requires=etcd.service
+Requires=kube-apiserver.service
+[Service]
+User=root
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/controller-manager
+ExecStart=/usr/bin/kube-controller-manager \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBE_MASTER \
+        $KUBE_CONTROLLER_MANAGER_ARGS
+Restart=on-failure
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# controller-manager配置
+cat <<EOF >>/etc/kubernetes/controller-manager
+KUBE_CONTROLLER_MANAGER_ARGS="--address=127.0.0.1 --service-cluster-ip-range=10.254.0.0/16 --cluster-name=kubernetes --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.pem --cluster-signing-key-file=/etc/kubernetes/ssl/ca-key.pem  --service-account-private-key-file=/etc/kubernetes/ssl/ca-key.pem --root-ca-file=/etc/kubernetes/ssl/ca.pem --leader-elect=true"
+EOF
+
+# kube-scheduler启动文件
+cat <<EOF >>/lib/systemd/system/kube-scheduler.service
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+[Service]
+User=root
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/scheduler
+ExecStart=/usr/bin/kube-scheduler \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_MASTER
+Restart=on-failure
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# scheduler配置
+cat <<EOF >>/etc/kubernetes/scheduler
+KUBE_SCHEDULER_ARGS="--leader-elect=true --address=127.0.0.1"
+EOF
+
+# 启动服务并验证
+for service in kube-apiserver.service kube-controller-manager.service kube-scheduler.service;do systemctl enable $service && systemctl start $service;done
+[root@ansible-k8s1 kubernetes]# ss -tnl
+State      Recv-Q Send-Q                                 Local Address:Port                                                Peer Address:Port
+LISTEN     0      128                                   192.168.29.101:6443                                                           *:*
+LISTEN     0      128                                   192.168.29.101:2379                                                           *:*
+LISTEN     0      128                                        127.0.0.1:2379                                                           *:*
+LISTEN     0      128                                        127.0.0.1:10252                                                          *:*
+LISTEN     0      128                                   192.168.29.101:2380                                                           *:*
+LISTEN     0      128                                   192.168.29.101:8080                                                           *:*
+LISTEN     0      128                                                *:22                                                             *:*
+LISTEN     0      100                                        127.0.0.1:25                                                             *:*
+LISTEN     0      128                                               :::10251                                                         :::*
+LISTEN     0      128                                               :::22                                                            :::*
+LISTEN     0      100                                              ::1:25                                                            :::*
+
