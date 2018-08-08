@@ -70,22 +70,22 @@ EOF
 
 # kubeconfig文件
 
-cat <<EOF >>/var/lib/kubelet/kubeconfig
-apiVersion: v1
-kind: Config
-users:
-- name: kubelet
-clusters:
-- name: kubernetes
-  cluster:
-    server: https://192.168.29.101:6443
-contexts:
-- context:
-    cluster: kubernetes
-    user: kubelet
-  name: service-account-context
-current-context: service-account-context
-EOF
+#cat <<EOF >>/var/lib/kubelet/kubeconfig
+#apiVersion: v1
+#kind: Config
+#users:
+#- name: kubelet
+#clusters:
+#- name: kubernetes
+#  cluster:
+#    server: https://192.168.29.101:6443
+#contexts:
+#- context:
+#   cluster: kubernetes
+ #   user: kubelet
+ # name: service-account-context
+#current-context: service-account-context
+#EOF
 
 # kube-controller-manager启动文件
 
