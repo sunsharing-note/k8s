@@ -6,7 +6,7 @@ cp etcd-v3.3.9-linux-amd64/etcd* /usr/bin
 
 # system启动文件
 
-cat <<EOF  >>cat /lib/systemd/system/etcd.service
+cat <<EOF  >>/lib/systemd/system/etcd.service
 [Unit]
 Description=Etcd Server
 Documentation=https://github.com/coreos/etcd
@@ -42,7 +42,7 @@ EOF
 
  mkdir /etc/etcd
  
- cat <<EOF >>/etc/etcd/etcd/conf
+ cat <<EOF >>/etc/etcd/etcd.conf
  ETCD_NAME=ansible-k8s1
 #ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
 #ETCD_DATA_DIR="/var/lib/etcd/"
