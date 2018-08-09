@@ -1,0 +1,54 @@
+# install kube-dns
+
+# 在node上pull相关镜像
+docker search k8s-dns
+docker pull ist0ne/k8s-dns-kube-dns-amd64
+docker pull ist0ne/k8s-dns-sidecar-amd64
+docker pull ist0ne/k8s-dns-dnsmasq-nanny-amd64
+docker tag ist0ne/k8s-dns-sidecar-amd64:latest ist0ne/k8s-dns-sidecar-amd64:0808
+docker tag ist0ne/k8s-dns-dnsmasq-nanny-amd64:latest ist0ne/k8s-dns-dnsmasq-nanny-amd64:0808
+docker tag ist0ne/k8s-dns-kube-dns-amd64:latest ist0ne/k8s-dns-kube-dns-amd64:0808
+
+# 所有定义文件 参考我的文件夹 K8s-dns
+[root@ansible-k8s1 k8s-dns]# pwd
+/data/k8s-dns
+[root@ansible-k8s1 k8s-dns]# ll
+total 24
+-rw-r--r-- 1 root root  143 Aug  9 09:16 kubedns-cm.yaml
+-rw-r--r-- 1 root root 4532 Aug  9 09:19 kubedns-controller.yaml
+-rw-r--r-- 1 root root  187 Aug  9 09:17 kubedns-sa.yaml
+-rw-r--r-- 1 root root  403 Aug  9 09:17 kubedns-svc.yaml
+# 执行
+kubectl create -f .
+
+# 验证
+[root@ansible-k8s1 k8s-dns]# cat my-nginx.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: my-nginx
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx:0808
+        ports:
+        - containerPort: 80
+# 执行
+kubectl create -f my-nginx.yaml
+kubectl expose deploy my-nginx
+kubectl get services --all-namespaces |grep my-nginx
+default       my-nginx     ClusterIP   10.254.17.197   <none>        80/TCP          21m
+
+[root@ansible-k8s1 k8s-dns]# kubectl exec nignx-b759dcf8f-hgt8v -it -- /bin/bash
+root@nignx-b759dcf8f-hgt8v:/# cat /etc/resolv.conf
+nameserver 10.254.0.2
+search default.svc.cluster.local svc.cluster.local cluster.local
+options ndots:5
+
+
