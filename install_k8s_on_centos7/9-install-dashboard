@@ -1,0 +1,22 @@
+# install k8s daashboard
+
+# 文件
+[root@ansible-k8s1 ssl]# cd /data/k8s-dashboard/
+[root@ansible-k8s1 k8s-dashboard]# ll
+total 12
+-rw-r--r-- 1 root root 1025 Aug  9 09:54 dashboard-controller.yaml
+-rw-r--r-- 1 root root  365 Aug  9 09:56 dashboard-rbac.yaml
+-rw-r--r-- 1 root root  339 Aug  9 09:49 dashboard-service.yaml
+# 镜像
+docker pull registry.cn-qingdao.aliyuncs.com/haitao/kubernetes-dashboard-amd64:v1.7.0
+docker tag registry.cn-qingdao.aliyuncs.com/haitao/kubernetes-dashboard-amd64:v1.7.0 k8s-dashboard:0808
+
+# 执行
+
+kubectl create -f .
+
+# 查看
+[root@ansible-k8s1 k8s-dashboard]# kubectl get services kubernetes-dashboard -n kube-system
+NAME                   TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes-dashboard   NodePort   10.254.111.17   <none>        80:30943/TCP   16m
+# 访问 http://192.168.29.101:30943 没有通过https访问 我的证书始终无法验证 后续再补上。
