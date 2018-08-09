@@ -1,0 +1,69 @@
+参考：https://blog.csdn.net/aixiaoyang168/article/details/73549898
+#1、install docker、docker-compose
+
+[root@ansible-k8s2 harbor]# docker --version
+Docker version 18.03.0-ce, build 0520e24
+
+[root@ansible-k8s2 harbor]# docker-compose --version
+docker-compose version 1.6.1, build a75c16c
+
+#2、install harbor
+
+# 下载online包
+
+https://github.com/vmware/harbor/releases
+
+# 解压并修改配置文件
+根据实际情况进行修改
+
+
+# 启动
+./install.sh
+
+# 查看
+
+docker images
+[root@ansible-k8s3 harbor]# docker ps -a
+CONTAINER ID        IMAGE                                  COMMAND                
+                                                    NAMES
+81a5996526cb        vmware/nginx-photon:v1.5.2             "nginx -g 'daemon of…" 
+tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:4443->4443/tcp   nginx
+163344933a2b        vmware/harbor-jobservice:v1.5.2        "/harbor/start.sh"     
+                                                    harbor-jobservice
+035ecbecab3d        vmware/harbor-db:v1.5.2                "/usr/local/bin/dock…" 
+                                                    harbor-db
+f1be0826792d        vmware/harbor-ui:v1.5.2                "/harbor/start.sh"     
+                                                    harbor-ui
+d324afc0ad20        vmware/registry-photon:v2.6.2-v1.5.2   "/entrypoint.sh serv…" 
+                                                    registry
+b93abf8ee1ca        vmware/harbor-adminserver:v1.5.2       "/harbor/start.sh"     
+                                                    harbor-adminserver
+923eb15c28eb        vmware/redis-photon:v1.5.2             "docker-entrypoint.s…" 
+                                                    redis
+e44b5cf9bfb3        vmware/harbor-log:v1.5.2               "/bin/sh -c /usr/loc…" 
+>10514/tcp                                          harbor-log
+docker-compose ps
+[root@ansible-k8s3 harbor]# docker images
+REPOSITORY                  TAG                 IMAGE ID            CREATED             SIZE
+vmware/redis-photon         v1.5.2              e8ec8e42d3cf        3 weeks ago         264MB
+vmware/registry-photon      v2.6.2-v1.5.2       254f767d3375        3 weeks ago         253MB
+vmware/nginx-photon         v1.5.2              cd19d787004d        3 weeks ago         190MB
+vmware/harbor-log           v1.5.2              3f14dfecc3f5        3 weeks ago         255MB
+vmware/harbor-jobservice    v1.5.2              e450c47fd1f0        3 weeks ago         249MB
+vmware/harbor-ui            v1.5.2              a942b187d9a4        3 weeks ago         267MB
+vmware/harbor-adminserver   v1.5.2              aff987dfb2a4        3 weeks ago         238MB
+vmware/harbor-db            v1.5.2              1c40f4189ef7        3 weeks ago         581MB
+
+# 访问UI 用户admin 密码在配置文件中
+
+# 本地上传测试
+docker login 192.168.29.103 如果出现无法登陆，则需要修改docker.service文件。像这样子ExecStart=/usr/bin/dockerd --insecure-registry 192.168.29.103 --registry-mirror=https://u3on8jih.mirror.aliyuncs.com --live-rest
+
+# 可配置多节点复制镜像
+
+# 停止harbor
+docker-compose down -v
+
+# 启动harbor
+
+docker-compose up -d
