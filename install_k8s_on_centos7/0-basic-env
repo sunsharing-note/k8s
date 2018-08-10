@@ -2,6 +2,14 @@
 # 关闭防火墙 master and node
 systemctl status firewalld.service && systemctl stop  firewalld.service && systemctl disable firewalld.service
 
+#关闭swap
+永久生效：
+echo "vm.swappiness = 0">> /etc/sysctl.conf     （尽量不使用交换分区，注意不是禁用）
+刷新SWAP
+可以执行命令刷新一次SWAP（将SWAP里的数据转储回内存，并清空SWAP里的数据）
+swapoff -a && swapon -a
+sysctl -p  (执行这个使其生效，不用重启) 
+
 # 关闭selinux master and node 
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g'/etc/selinux/config # 重启一下 master and node
 
