@@ -1,0 +1,6 @@
+通过nodeSelector，一个Pod可以指定它所想要运行的Node节点。
+
+首先给Node加上标签：
+kubectl label nodes <your-node-name> disktype=ssd
+kubectl label nodes <your-node-name> disktype=ssd
+接着，指定该Pod只想运行在带有disktype=ssd标签的Node上：

@@ -1,0 +1,4 @@
+Namespace是对一组资源和对象的抽象集合，比如可以用来将系统内部的对象划分为不同的项目组或用户组。常见的pods, services, replication controllers
+和deployments等都是属于某一个namespace的（默认是default），而node, persistentVolumes等则不属于任何namespace。
+注意：namespace包含两种状态”Active”和”Terminating”。在namespace删除过程中，namespace状态被设置成”Terminating”。
+

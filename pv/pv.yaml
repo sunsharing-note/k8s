@@ -1,0 +1,23 @@
+ apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: pv0003
+  spec:
+    capacity:
+      storage: 5Gi
+    accessModes:
+      - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Recycle
+    storageClassName: slow
+    nfs:
+      path: /tmp
+      server: 172.17.0.2
+
+Capacity
+通常，PV将具有特定的存储容量。 这是使用PV的容量属性设置的。 看到库伯纳斯资源模型，以了解容量预期的单位。
+
+访问模式:
+ReadWriteOnce – the volume can be mounted as read-write by a single node (单node的读写)
+ReadOnlyMany – the volume can be mounted read-only by many nodes (多node的只读)
+ReadWriteMany – the volume can be mounted as read-write by many nodes (多node的读写)
+

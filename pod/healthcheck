@@ -1,0 +1,4 @@
+为了确保容器在部署后确实处在正常运行状态，Kubernetes提供了两种探针（Probe，支持exec、tcp和httpGet方式）来探测容器的状态：
+
+LivenessProbe：探测应用是否处于健康状态，如果不健康则删除重建改容器
+ReadinessProbe：探测应用是否启动完成并且处于正常服务状态，如果不正常则更新容器的状态

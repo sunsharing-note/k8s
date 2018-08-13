@@ -1,0 +1,3 @@
+正如我们在pod的生命周期中讨论的，Replication Controller只会对那些RestartPolicy = Always的Pod的生效，（RestartPolicy的默认值就是Always）,Replication Controller 不会去管理那些有不同启动策略pod
+Replication Controller永远不会自己关闭.一个Replication Controller通过模版来创建pod,
+

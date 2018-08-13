@@ -1,0 +1,27 @@
+Node是Pod真正运行的主机，可以物理机，也可以是虚拟机。为了管理Pod，每个Node节点上至少要运行container runtime（比如docker或者rkt）、kubelet和kube-proxy服务。
+Node Controller负责
+
+1、维护Node状态
+2、与Cloud Provider同步Node
+给Node分配容器CIDR
+3、删除带有NoExecute taint的Node上的Pods
+默认情况下，kubelet在启动时会向master注册自己，并创建Node资源。
+
+Node的状态
+每个Node都包括以下状态信息
+
+地址：包括hostname、外网IP和内网IP
+条件（Condition）：包括OutOfDisk、Ready、MemoryPressure和DiskPressure
+容量（Capacity）：Node上的可用资源，包括CPU、内存和Pod总数
+基本信息（Info）：包括内核版本、容器引擎版本、OS类型等
+
+Taints和tolerations用于保证Pod不被调度到不合适的Node上，Taint应用于Node上，而toleration则应用于Pod上（Toleration是可选的）。
+
+比如，可以使用taint命令给node1添加taints：
+
+kubectl taint nodes node1 key1=value1:NoSchedule
+kubectl taint nodes node1 key1=value2:NoExecute
+
+标志Node不可调度但不影响其上正在运行的Pod，这种维护Node时是非常有用的
+
+kubectl cordon $NODENAME

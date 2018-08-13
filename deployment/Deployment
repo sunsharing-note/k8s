@@ -1,0 +1,26 @@
+Deployment为Pod和ReplicaSet提供了一个声明式定义(declarative)方法，用来替代以前的ReplicationController来方便的管理应用。典型的应用场景包括：
+
+定义Deployment来创建Pod和ReplicaSet
+滚动升级和回滚应用
+扩容和缩容
+暂停和继续Deployment
+
+Deployment为Pod和Replica Set（下一代Replication Controller）提供声明式更新。
+
+注意： Deployment的rollout当且仅当Deployment的pod template（例如.spec.template）中的label更新或者镜像更改时被触发。其他更新，例如扩容Deployment不会触发rollout。
+
+Deployment状态
+Deployment在生命周期中有多种状态。在创建一个新的ReplicaSet的时候它可以是 progressing 状态， complete 状态，或者fail to progress状态。
+
+
+Failed Deployment
+你的Deployment在尝试部署新的ReplicaSet的时候可能卡住，用于也不会完成。这可能是因为以下几个因素引起的：
+
+无效的引用
+不可读的probe failure
+镜像拉取错误
+权限不够
+范围限制
+程序运行时配置错误
+探测这种情况的一种方式是，在你的Deployment spec中指定spec.progressDeadlineSeconds。spec.progressDeadlineSeconds表示Deployment controller等待多少秒才能确定（通过Deployment status）Deployment进程是卡住的。
+

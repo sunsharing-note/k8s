@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+spec:
+  replicas: 2
+  strategy:
+      type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        visualize: "true"
+    spec:
+      containers:
+      - name: "wordpress"
+        image: "wordpress"
+        ports:
+        - containerPort: 80
+        env:
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: username
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: password

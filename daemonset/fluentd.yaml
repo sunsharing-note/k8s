@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: fluentd
+spec:
+  template:
+    metadata:
+      labels:
+        app: logging
+        id: fluentd
+      name: fluentd
+    spec:
+      containers:
+      - name: fluentd-es
+        image: gcr.io/google_containers/fluentd-elasticsearch:1.3
+        env:
+         - name: FLUENTD_ARGS
+           value: -qq
+        volumeMounts:
+         - name: containers
+           mountPath: /var/lib/docker/containers
+         - name: varlog
+           mountPath: /varlog
+      volumes:
+         - hostPath:
+             path: /var/lib/docker/containers
+           name: containers
+         - hostPath:
+             path: /var/log
+           name: varlog

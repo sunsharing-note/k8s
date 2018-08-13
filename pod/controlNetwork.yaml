@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos
+  annotations:
+    kubernetes.io/ingress-bandwidth: 3M
+    kubernetes.io/egress-bandwidth: 4M
+spec:
+  containers:
+  - name: iperf3
+    image: networkstatic/iperf3
+    command:
+    - iperf3
+    - -s

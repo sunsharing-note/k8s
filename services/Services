@@ -1,0 +1,70 @@
+Kubernete Service 是一个定义了一组Pod的策略的抽象，我们也有时候叫做宏观服务。这些被服务标记的Pod都是（一般）通过label Selector决定的（下面我们会讲到我们为什么需要一个没有label selector的服务）
+
+服务总体上抽象了对Pod的访问，但是服务也抽象了其它的内容，比如：
+
+1：比如你希望有一个额外的数据库云在生产环境中，但是在测试的时候，我们希望使用自己的数据库
+
+2：我们希望将服务指向其它的服务或者其它命名空间或者其它的云平台上的服务
+
+3：我们正在向kubernete迁移，并且我们后台并没有在Kubernete中
+
+每一个节点上都运行了一个kube-proxy，这个应用监控着Kubermaster增加和删除服务，对于每一个服务，kube-proxy会随机开启一个本机端口，任何发向这个端口的请求都会被转发到一个后台的Pod当中，而如何选择是哪一个后台的pod的是基于SessionAffinity进行的分配。kube-proxy会增加iptables rules来实现捕捉这个服务的Ip和端口来并重定向到前面提到的端口。
+
+最终的结果就是所有的对于这个服务的请求都会被转发到后台的Pod中，这一过程用户根本察觉不到
+默认的，后台的选择是随机的，基于用户session机制的策略可以通过修改service.spec.sessionAffinity 的值从NONE到ClientIP
+
+为什么不使用循环的DNS
+一个问题持续的被提出来，这个问题就是我们为什么不使用标准的循环DNS而使用虚拟IP，我们主要有如下几个原因
+
+1：DNS不遵循TTL查询和缓存name查询的问题由来已久（这个还真不知道，就是DNS更新的问题估计）
+
+2：许多的应用的DNS查询查询一次后就缓存起来
+
+3：即使如上亮点被解决了，但是不停的进行DNS进行查询，大量的请求也是很难被管理的
+
+kubernetes支持两种服务的发现：环境变量和DNS
+
+环境变量
+当一个Pod在一个node上运行时，kubelet 会针对运行的服务增加一系列的环境变量，它支持Docker links compatible 和普通环境变量
+
+举例子来说：
+
+redis-master服务暴露了 TCP 6379端口，并且被分配了10.0.0.11 IP地址
+
+那么我们就会有如下的环境变量
+
+REDIS_MASTER_SERVICE_HOST=10.0.0.11
+
+REDIS_MASTER_SERVICE_PORT=6379
+
+REDIS_MASTER_PORT=tcp://10.0.0.11:6379
+
+REDIS_MASTER_PORT_6379_TCP=tcp://10.0.0.11:6379
+
+REDIS_MASTER_PORT_6379_TCP_PROTO=tcp
+
+REDIS_MASTER_PORT_6379_TCP_PORT=6379
+
+REDIS_MASTER_PORT_6379_TCP_ADDR=10.0.0.11
+
+DNS
+一个可选择的云平台插件就是DNS，DNS 服务器监控着API SERVER ，当有服务被创建的时候，DNS 服务器会为之创建相应的记录，如果DNS这个服务被添加了，那么Pod应该是可以自动解析服务的。
+
+举个例子来说：如果我们在my-ns命名空间下有一个服务叫做“my-service”，这个时候DNS就会创建一个my-service.my-ns的记录，所有my-ns命名空间下的Pod,都可以通过域名my-service查询找到对应的ip地址，不同命名空间下的Pod在查找是必须使用my-sesrvice.my-ns才可以。
+
+Kubernete 同样支持端口的解析，如果my-service有一个提供http的TCP主持的端口，那么我们可以通过查询“_http._tcp.my-service.my-ns”来查询这个端口
+
+Headless services
+有时候我们可能不需要一个固定的IP和分发，这个时候我们只需要将spec.clusterIP的值设置为none就可以了
+
+External services（外部服务）
+对于我们的应用程序来说，我们可能有一部分是放在Kubernete外部的（比如我们有单独的物理机来承担数据库的角色），
+Kubernetes支持两种方式：NodePorts，LoadBalancers
+每一个服务都会有一个字段定义了该服务如何被调用（发现），这个字段的值可以为：
+
+ClusterIP:使用一个集群固定IP，这个是默认选项
+NodePort：使用一个集群固定IP，但是额外在每个POD上均暴露这个服务，端口
+LoadBalancer：使用集群固定IP，和NODEPort,额外还会申请申请一个负载均衡器来转发到服务（load balancer ）
+
+
+

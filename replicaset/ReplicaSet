@@ -1,0 +1,10 @@
+ReplicaSet是下一代复本控制器。ReplicaSet和 Replication Controller之间的唯一区别是现在的选择器支持。Replication Controller
+只支持基于等式的selector（env=dev或environment!=qa），但ReplicaSet还支持新的，基于集合的selector（version in (v1.0, v2.0)或
+env notin (dev, qa)）。在试用时官方推荐ReplicaSet。
+
+大多数kubectl支持Replication Controller的命令也支持ReplicaSets。rolling-update命令有一个例外 。如果您想要滚动更新功能，请考虑使用Deployments。此外， rolling-update命令是必须的，而Deployments是声明式的，因此我们建议通过rollout命令使用Deployments。
+虽然ReplicaSets可以独立使用，但是今天它主要被 Deployments 作为协调pod创建，删除和更新的机制。当您使用Deployments时，您不必担心管理他们创建的ReplicaSets。Deployments拥有并管理其ReplicaSets。
+
+ReplicaSet可确保指定数量的pod“replicas”在任何设定的时间运行。然而，Deployments是一个更高层次的概念，它管理ReplicaSets，并提供对pod的声明性更新以及许多其他的功能。因此，我们建议您使用Deployments而不是直接使用ReplicaSets，除非您需要自定义更新编排或根本不需要更新。
+
+

@@ -1,0 +1,6 @@
+支持三种RestartPolicy
+
+Always：只要退出就重启
+OnFailure：失败退出（exit code不等于0）时重启
+Never：只要退出就不再重启
+注意，这里的重启是指在Pod所在Node上面本地重启，并不会调度到其他Node上去。

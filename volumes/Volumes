@@ -1,0 +1,29 @@
+容器中的磁盘的生命周期是短暂的，这就带来了一系列的问题，第一，当一个容器损坏之后，kubelet 会重启这个容器，但是文件会丢失-这个容器会是一个全新的状态，第二，当很多容器在同一Pod中运行的时候，很多时候需要数据文件的共享。Kubernete Volume解决了这个问题
+
+一个Kubernetes volume，拥有明确的生命周期，与所在的Pod的生命周期相同。因此，Kubernetes volume独立与任何容器，与Pod相关，所以数据在重启的过程中还会保留，当然，如果这个Pod被删除了，那么这些数据也会被删除。更重要的是，Kubernetes volume 支持多种类型，
+任何容器都可以使用多个Kubernetes volume。
+
+Kubernete 支持如下类型的volume:
+
+emptyDir
+
+hostPath
+
+gcePersistentDisk
+
+awsElasticBlockStore
+
+nfs
+
+iscsi
+
+glusterfs
+
+rbd
+
+gitRepo
+
+secret
+
+persistentVolumeClaim
+
