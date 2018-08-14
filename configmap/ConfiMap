@@ -1,0 +1,42 @@
+ConfigMap用于保存配置数据的键值对，可以用来保存单个属性，也可以用来保存配置文件。
+ConfigMap跟secret很类似，但它可以更方便地处理不包含敏感信息的字符串。
+
+可以使用kubectl create configmap从文件、目录或者key-value字符串创建等创建ConfigMap。
+
+# 从key-value字符串创建ConfigMap
+$ kubectl create configmap special-config --from-literal=special.how=very
+configmap "special-config" created
+$ kubectl get configmap special-config -o go-template='{{.data}}'
+map[special.how:very]
+
+# 从env文件创建
+$ echo -e "a=b\nc=d" | tee config.env
+a=b
+c=d
+$ kubectl create configmap special-config --from-env-file=config.env
+configmap "special-config" created
+$ kubectl get configmap special-config -o go-template='{{.data}}'
+map[a:b c:d]
+
+# 从目录创建
+$ mkdir config
+$ echo a>config/a
+$ echo b>config/b
+$ kubectl create configmap special-config --from-file=config/
+configmap "special-config" created
+$ kubectl get configmap special-config -o go-template='{{.data}}'
+map[a:a
+ b:b
+]
+
+
+ConfigMap可以通过多种方式在Pod中使用，比如设置环境变量、设置容器命令行参数、在Volume中创建配置文件等。
+
+
+ConfigMap必须在Pod引用它之前创建
+使用envFrom时，将会自动忽略无效的键
+Pod只能使用同一个命名空间内的ConfigMap
+
+$ kubectl create configmap special-config --from-literal=special.how=very --from-literal=special.type=charm
+$ kubectl create configmap env-config --from-literal=log_level=INFO
+

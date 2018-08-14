@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world
+spec:
+  containers:
+  # specification of the pod's containers
+  # ...
+  securityContext:
+    fsGroup: 1234
+    supplementalGroups: [5678]
+    seLinuxOptions:
+      level: "s0:c123,c456"

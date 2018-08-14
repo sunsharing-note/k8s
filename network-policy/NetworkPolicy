@@ -1,0 +1,6 @@
+Network Policy提供了基于策略的网络控制，用于隔离应用并减少攻击面。它使用标签选择器模拟传统的分段网络，
+并通过策略控制它们之间的流量以及来自外部的流量。
+
+在使用它之前需要：
+1、apiserver开启extensions/v1beta1/networkpolicies
+2、网络插件要支持Network Policy，如Calico、Romana、Weave Net和trireme等

@@ -1,0 +1,4 @@
+PodPreset用来给指定标签的Pod注入额外的信息，如环境变量、存储卷等。这样，Pod模板就不需要为每个Pod都显式设置重复的信息。
+如果要使用podpreset，则需要开启：
+1、开启API settings.k8s.io/v1alpha1/podpreset
+2、开启准入控制 PodPreset

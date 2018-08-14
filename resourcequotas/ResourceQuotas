@@ -1,0 +1,11 @@
+资源配额（Resource Quotas）是用来限制用户资源用量的一种机制。
+其原理如下：
+1、资源配额应用在Namespace上，并且每个Namespace最多只能有一个ResourceQuota对象
+2、开启计算资源配额后，创建容器时必须配置计算资源请求或限制（也可以用LimitRange设置默认值）
+3、用户超额后禁止创建新的资源
+
+
+资源配额的启用
+在API Server启动时配置ResourceQuota adminssion control；然后在namespace中创建ResourceQuota对象即可。
+
+
