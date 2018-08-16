@@ -1,4 +1,5 @@
 参考：https://blog.csdn.net/aixiaoyang168/article/details/73549898  https://www.cnblogs.com/huangjc/p/6270405.html(这个链接更好)
+https://www.58jb.com/html/117.html ssl认证验证
 #1、install docker、docker-compose
 
 [root@ansible-k8s2 harbor]# docker --version
