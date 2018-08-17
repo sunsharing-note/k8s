@@ -1,0 +1,6 @@
+# docker 加速器配置
+在docker启动文件中配置
+ExecStart=/usr/bin/dockerd --registry-mirror=https://u3on8jih.mirror.aliyuncs.com --live-restore
+
+
+--registry-mirror=https://rd1w69tk.mirror.aliyuncs.com
