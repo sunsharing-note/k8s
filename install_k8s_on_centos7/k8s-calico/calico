@@ -1,0 +1,6 @@
+calico主要由Felix,etcd,BGP client,BGP Route Reflector组成。
+
+Etcd：负责存储网络信息
+BGP client：负责将Felix配置的路由信息分发到其他节点
+Felix：Calico Agent，每个节点都需要运行，主要负责配置路由、配置ACLs、报告状态
+BGP Route Reflector：大规模部署时需要用到，作为BGP client的中心连接点，可以避免每个节点互联
