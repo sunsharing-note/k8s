@@ -1,0 +1,138 @@
+#! /bin/bash
+# 以下是整个环境说明：
+# OS: CentOS Linux release 7.3.1611 (Core) k8s: v1.11.1 docker-version:docker-ce-18.03.0.ce flannel: 0.10 etcd:3.2.18
+# master: 192.168.40.200 ansible-k8s1 node1: 192.168.40.201 ansible-k8s2 node2: 192.168.40.202 ansible-k8s3
+
+
+# 基础环境配置 所有服务器均需要做 以下是在master中配置
+
+# 1、关闭防火墙
+systemctl status firewalld.service && systemctl stop  firewalld.service && systemctl disable firewalld.service
+
+# 2、关闭swap
+echo "vm.swappiness = 0">> /etc/sysctl.conf && swapoff -a && swapon -a # sysctl -p  (执行这个使其生效，不用重启) 
+
+
+# 3、关闭selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g'/etc/selinux/config # 重启
+
+# 4、解析主机名
+echo "192.168.40.200 ansible-k8s1.huahua.com ansible-k8s1" >>/etc/hosts
+echo "192.168.40.201 ansible-k8s2.huahua.com ansible-k8s2" >>/etc/hosts
+echo "192.168.40.202 ansible-k8s3.huahua.com ansible-k8s3" >>/etc/hosts
+
+# 5、配置ssh免密连接，后续需要复制文件
+ssh-keygen -t rsa  三次回车
+ssh-copy-id root@ansible-k8s2
+ssh-copy-id root@ansible-k8s3
+
+# 6、配置所需yum 我配置的有本地、docker、kubernetes相关的yum
+
+# 配置本地yum
+mount /dev/cdrom /mnt
+cat <<EOF >>/etc/yum.repos.d/mnt.repo
+[mnt]
+name = centos 7 server
+baseurl=file:///mnt
+enabled=1
+gpgcheck=0
+EOF
+
+# 配置docker所需yum
+cat <<EOF >>/etc/yum.repos.d/docker-ce.repo
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-debuginfo]
+name=Docker CE Stable - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-source]
+name=Docker CE Stable - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge]
+name=Docker CE Edge - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge-debuginfo]
+name=Docker CE Edge - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-edge-source]
+name=Docker CE Edge - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/edge
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test]
+name=Docker CE Test - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-debuginfo]
+name=Docker CE Test - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-source]
+name=Docker CE Test - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly]
+name=Docker CE Nightly - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-debuginfo]
+name=Docker CE Nightly - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/debug-$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-source]
+name=Docker CE Nightly - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/source/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+EOF
+
+
+# 配置kubernetes所需yum
+
+cat <<EOF >>/etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=kubernetes 1.11.1
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+gpgcheck=0
+enabled=1
+EOF
+
