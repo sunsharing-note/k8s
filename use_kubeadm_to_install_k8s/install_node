@@ -1,0 +1,32 @@
+# node 安装配置类似 这里记录node1的过程
+
+# 安装配置 docker- kubeadm kubectl kubelet  参照master配置
+
+
+sed -i 's/ExecStart=/usr/bin/dockerd/& --registry-mirror=https://u3on8jih.mirror.aliyuncs.com --live-restore/g' /usr/lib/systemd/system/docker.service
+
+
+sed -i 's/KUBELET_EXTRA_ARGS=/& "--fail-swap-on=false"/' /etc/sysconfig/kubelet
+
+systemctl daemon-reload && systemctl start docker
+systemctl status docker.service # 查看是否正常 也可以使用docker info
+
+
+systemctl enable docker kubelet
+
+
+
+# 手动拉取镜像   
+
+
+# join master  master初始化之后的结果会显示 如何加入master
+
+kubeadm join 192.168.40.200:6443 --token o07gfg.2cjkfq8w9w2e5sx4 --discovery-token-ca-cert-hash sha256:5c4688096391a356faffe3ecbad622cefdfc3600434aea8f1a384b4405244c12 --ignore-preflight-errors=Swap
+
+# master查看结果
+
+[root@ansible-k8s1 ~]# kubectl get nodes
+NAME           STATUS    ROLES     AGE       VERSION
+ansible-k8s1   Ready     master    10h       v1.11.1
+ansible-k8s2   Ready     <none>    1h        v1.11.1
+ansible-k8s3   Ready     <none>    1h        v1.11.1
