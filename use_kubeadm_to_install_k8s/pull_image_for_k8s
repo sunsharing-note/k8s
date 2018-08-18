@@ -1,0 +1,69 @@
+# 由于不可描述原因 过程中程序无法连接到相应的地址pull镜像，所以我手动拉取的镜像。
+# 在拉取相关镜像后，需要tag一下 
+
+# 1、在别人的dockerhub上获取
+
+# 查询
+
+ curl -s https://www.zhangguanzhang.com/pull |bash -s search  gcr.io/google_containers/flannel
+ 
+# 拉取
+
+curl -s https://www.zhangguanzhang.com/pull |bash -s --  gcr.io/google_containers/kube-apiserver-amd64:v1.11.1
+
+# tag
+docker tag gcr.io/google_containers/kube-controller-manager-amd64:v1.11.1 k8s.gcr.io/kube-controller-manager-amd64:v1.11.1
+
+# 根据需要自行修改
+
+
+# 2、我从上面拉取镜像后push一分到了自己的dockerhub上 方便以后使用 其他的修改名字
+docker pull xiyangxixia/k8s-proxy-amd64:v1.11.1
+docker tag xiyangxixia/k8s-proxy-amd64:v1.11.1 k8s.gcr.io/kube-proxy-amd64:v1.11.1
+
+
+
+# master 所需镜像
+[root@ansible-k8s1 ~]# docker images | awk '$1~"k8s.gcr"{print $1":"$2}'
+k8s.gcr.io/kube-proxy-amd64:v1.11.1
+k8s.gcr.io/kube-apiserver-amd64:v1.11.1
+k8s.gcr.io/kube-scheduler-amd64:v1.11.1
+k8s.gcr.io/kube-controller-manager-amd64:v1.11.1
+k8s.gcr.io/coredns:1.1.3
+k8s.gcr.io/etcd-amd64:3.2.18
+k8s.gcr.io/pause:3.1
+
+#
+quay.io/coreos/flannel:v0.10.0-s390x
+quay.io/coreos/flannel:v0.10.0-ppc64le
+quay.io/coreos/flannel:v0.10.0-arm
+quay.io/coreos/flannel:v0.10.0-amd64
+
+# 而下载后的镜像为
+[root@ansible-k8s1 ~]# docker images | awk '$1~"xiyangxixia"{print $1":"$2}'
+xiyangxixia/k8s-proxy-amd64:v1.11.1
+xiyangxixia/k8s-scheduler:v1.11.1
+xiyangxixia/k8s-apiserver-amd64:v1.11.1
+xiyangxixia/k8s-controller-manager:v1.11.1
+xiyangxixia/k8s-coredns:1.1.3
+xiyangxixia/k8s-etcd:3.2.18
+xiyangxixia/k8s-flannel:v0.10.0-s390x
+xiyangxixia/k8s-flannel:v0.10.0-ppc64le
+xiyangxixia/k8s-flannel:v0.10.0-arm
+xiyangxixia/k8s-flannel:v0.10.0-amd64
+xiyangxixia/k8s-pause:3.1
+
+# 
+quay.io/coreos/flannel:v0.10.0-s390x
+quay.io/coreos/flannel:v0.10.0-ppc64le
+quay.io/coreos/flannel:v0.10.0-arm
+quay.io/coreos/flannel:v0.10.0-amd64
+
+
+# 通过命令打标签
+
+docker tag  xiyangxixia/k8s-proxy-amd64:v1.11.1   k8s.gcr.io/kube-proxy-amd64:v1.11.1
+
+
+
+
