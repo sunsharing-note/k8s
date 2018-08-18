@@ -1,0 +1,42 @@
+# 主节点安装与配置
+# 前提搭建好初始环境
+
+
+# 1、安装配置docker kubectl kubeadm kubelet 所有服务器都需要安装 docker kubeadm kubelet
+
+yum -y install docker-ce-18.03.0.ce kubelet-1.11.1 kubectl-1.11.1 kubeadm-1.11.1
+# 修改docker.service 可以在其中添加镜像的代理，就不需要后续自己处理镜像，由于我没有代理服务器，故我只加了加速器，找别人的dockerhub仓库镜像，最好自己保存一份
+
+sed -i 's/ExecStart=/usr/bin/dockerd/& --registry-mirror=https://u3on8jih.mirror.aliyuncs.com --live-restore/g' /usr/lib/systemd/system/docker.service
+
+systemctl daemon-reload && systemctl start docker
+systemctl status docker.service # 查看是否正常 也可以使用docker info
+# 如果正常 过程中不需要启动kubelet
+systemctl enable docker kubelet
+
+# 2、初始化配置以及正式初始化
+rpm -ql kubelet  # 找kubelet配置目录
+
+sed -i 's/KUBELET_EXTRA_ARGS=/& "--fail-swap-on=false"/' /etc/sysconfig/kubelet
+
+# 利用kubeadm init --help 查看参数  由于过程中需要涉及到一些镜像pull,而我们没法直接pull,故 我这里手动pull 参考另一个文件: pull_image_for_k8s
+
+# 正式初始化  具体使用参数，根据实际情况选用 我这里将结果保存到/root/k8s.txt 方便我查看和使用
+
+kubeadm init --kubernetes-version=v1.11.1 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --ignore-preflight-errors=Swap >>/root/k8s.txt
+
+# 执行初始化后提示需要执行的步骤 通过/root/k8s.txt得知
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+kubectl get nodes # 显示 NotReady
+
+# 安装配置flannel 手动拉取镜像
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+kubectl get nodes # 显示Ready
+
+
+
+
+
