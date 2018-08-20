@@ -3,7 +3,7 @@
 # 安装配置 docker- kubeadm kubectl kubelet  参照master配置
 
 
-sed -i 's/ExecStart=/usr/bin/dockerd/& --registry-mirror=https://u3on8jih.mirror.aliyuncs.com --live-restore/g' /usr/lib/systemd/system/docker.service
+sed -i 's/ExecStart=\/usr\/bin\/dockerd/& --registry-mirror=https:\/\/u3on8jih.mirror.aliyuncs.com --live-restore/g' /usr/lib/systemd/system/docker.service
 
 
 sed -i 's/KUBELET_EXTRA_ARGS=/& "--fail-swap-on=false"/' /etc/sysconfig/kubelet
