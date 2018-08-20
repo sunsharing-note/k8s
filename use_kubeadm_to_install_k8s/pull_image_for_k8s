@@ -86,7 +86,13 @@ docker tag xiyangxixia/k8s-flannel:v0.10.0-amd64 quay.io/coreos/flannel:v0.10.0-
 
 
 通过命令打标签 node
+docker pull xiyangxixia/k8s-pause:3.1
+docker tag xiyangxixia/k8s-pause:3.1 k8s.gcr.io/pause:3.1
+docker pull xiyangxixia/k8s-proxy-amd64:v1.11.1
+docker tag xiyangxixia/k8s-proxy-amd64:v1.11.1 k8s.gcr.io/kube-proxy-amd64:v1.11.1
 
+docker pull xiyangxixia/k8s-flannel:v0.10.0-amd64
+docker tag xiyangxixia/k8s-flannel:v0.10.0-amd64 quay.io/coreos/flannel:v0.10.0-amd64
 
 
 
