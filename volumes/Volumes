@@ -27,3 +27,14 @@ secret
 
 persistentVolumeClaim
 
+
+
+# 使用Hostpath时的一些事项
+	Empty string (default) is for backward compatibility, which means that no checks will be performed before mounting the hostPath volume.
+DirectoryOrCreate	If nothing exists at the given path, an empty directory will be created there as needed with permission set to 0755, having the same group and ownership with Kubelet.
+Directory	A directory must exist at the given path
+FileOrCreate	If nothing exists at the given path, an empty file will be created there as needed with permission set to 0644, having the same group and ownership with Kubelet.
+File	A file must exist at the given path
+Socket	A UNIX socket must exist at the given path
+CharDevice	A character device must exist at the given path
+BlockDevice	A block device must exist at the given path
