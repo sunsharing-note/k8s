@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-cm
+  labels:
+    app: my-cm
+spec:
+  containers:
+  - name: my-cm
+    image: nginx
+    ports:
+    - name: http
+      containerPort: 80
+    volumeMounts:
+    - name: my-cm
+      mountPath: /usr/nginx
+  volumes:
+  - name: my-cm
+    configMap:
+      name: my-cm

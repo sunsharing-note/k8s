@@ -1,0 +1,13 @@
+openssl  genrsa -out zhouhua.key 2048
+
+openssl  req -new -key zhouhua.key -out zhouhua.csr -subj "/CN=zhouhua"
+
+openssl x509 -req -in zhouhua.csr -CA ./ca.crt -CAkey ./ca.key -CAcreateserial -out zhouhua.crt -days 365
+
+kubectl config set-credentials zhouhua --client-certificate=./zhouhua.crt --client-key=./zhouhua.key --embed-certs=true
+
+kubectl config set-context zhouhua@kubernetes --cluster=kubernetes --user=zhouhua
+
+kubectl config use-context zhouhua@kubernetes
+
+kubectl config use-context kubernetes-admin@kubernetes

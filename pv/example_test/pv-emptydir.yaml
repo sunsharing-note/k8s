@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-em
+  namespace: default
+  labels:
+    app: pv-em
+spec:
+  containers:
+  - name: pv-em
+    image: ikubernetes/myapp:v1
+    imagePullPolicy: IfNotPresent
+    ports:
+    - name: http
+      containerPort: 80
+    volumeMounts:
+    - name: html
+      mountPath: /use/share/nginx/html/
+  - name: pv-by
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: html
+      mountPath: /data/
+    command: ["/bin/sh"]
+    args: ["-c", "echo $(date) >>/data/index.html"]
+  volumes:
+  - name: html
+    emptyDir: {}

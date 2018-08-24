@@ -1,0 +1,4 @@
+traefik 是一个使用golang开发的轻量级的http反向代理和负载均衡器。
+可以自动配置和刷新backend配置，与NGINX不同的是，NGINX是通过NGINX-controller与API进行交互，
+实时获取service、pod的变化，然后动态更新nginx配置文件，刷新使配置生效。而traefik可直接与API进行交互，
+感知service和pod的变化，自动更新配置并热重载。

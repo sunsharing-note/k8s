@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myconfigmap
+  labels:
+    app: myconfigmap
+spec:
+  containers:
+  - name: my-confimap
+    image: ikubernetes/myapp:v2
+    ports:
+    - name: http
+      containerPort: 80
+    volumeMounts:
+    - name: configmap
+      mountPath: /usr/nginx
+  volumes:
+  - name: configmap
+    configMap:
+      name: myconfigmap
