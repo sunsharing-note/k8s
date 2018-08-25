@@ -12,4 +12,4 @@
    kubectl create clusterrolebinding kubernetes-dashboard --clusterrole cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
    具体名字视具体情况而定
  2.2 kubeconfig
-   参考在centos7上搭建k8s集群关于创建kubeconfig的步骤
+  参考：access_by_token_and_kubeconfig
