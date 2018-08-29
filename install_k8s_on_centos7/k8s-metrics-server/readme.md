@@ -1,4 +1,4 @@
-说明: 用于手机node和pod的cpu和memory使用情况。
+说明: 用于收集node和pod的cpu和memory使用情况。
 
 可使用metrics-server.yaml文件或者k8s-metrics文件夹中的yaml文件。
 
@@ -9,4 +9,9 @@
 
 关于角色绑定的需要添加 nodes/stats
 
-另外如果有问题，再把关于minClusterSize的注释掉。
+另外如果有问题，再把关于minClusterSize的注释掉
+
+
+后面即可使用kubectl top nodes/pods查看相关的使用情况
+
+后面将使用grafana prometheus
