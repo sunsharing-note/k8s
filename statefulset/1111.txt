@@ -1,0 +1,99 @@
+cfssl gencert \
+  -ca=${DIR}/etcd-ca.pem \
+  -ca-key=${DIR}/etcd-ca-key.pem \
+  -config=ca-config.json \
+  -hostname=127.0.0.1,192.168.29.101,192.168.29.102,192.168.29.103 \
+  -profile=kubernetes \
+  etcd-csr.json | cfssljson -bare ${DIR}/etcd
+  
+  
+  cfssl gencert \
+  -ca=${PKI_DIR}/ca.pem \
+  -ca-key=${PKI_DIR}/ca-key.pem \
+  -config=ca-config.json \
+  -hostname=10.96.0.1,192.168.29.100,127.0.0.1,kubernetes.default \
+  -profile=kubernetes \
+  apiserver-csr.json | cfssljson -bare ${PKI_DIR}/apiserver
+  
+  
+  for NODE in ansible-k8s1 ansible-k8s2 ansible-k8s3; do
+    echo "--- $NODE ---"
+    cp kubelet-csr.json kubelet-$NODE-csr.json;
+    sed -i "s/\$NODE/$NODE/g" kubelet-$NODE-csr.json;
+    cfssl gencert \
+      -ca=${PKI_DIR}/ca.pem \
+      -ca-key=${PKI_DIR}/ca-key.pem \
+      -config=ca-config.json \
+      -hostname=$NODE \
+      -profile=kubernetes \
+      kubelet-$NODE-csr.json | cfssljson -bare ${PKI_DIR}/kubelet-$NODE;
+    rm kubelet-$NODE-csr.json
+  done
+  
+  
+  
+  for NODE in ansible-k8s1 ansible-k8s2 ansible-k8s3; do
+    echo "--- $NODE ---"
+    ssh ${NODE} "mkdir -p ${PKI_DIR}"
+    scp ${PKI_DIR}/ca.pem ${NODE}:${PKI_DIR}/ca.pem
+    scp ${PKI_DIR}/kubelet-$NODE-key.pem ${NODE}:${PKI_DIR}/kubelet-key.pem
+    scp ${PKI_DIR}/kubelet-$NODE.pem ${NODE}:${PKI_DIR}/kubelet.pem
+    rm ${PKI_DIR}/kubelet-$NODE-key.pem ${PKI_DIR}/kubelet-$NODE.pem
+  done
+  
+  
+  
+  
+  
+  
+  for NODE in ansible-k8s1 ansible-k8s2 ansible-k8s3; do
+    echo "--- $NODE ---"
+    ssh ${NODE} "cd ${PKI_DIR} && \
+      kubectl config set-cluster kubernetes \
+        --certificate-authority=${PKI_DIR}/ca.pem \
+        --embed-certs=true \
+        --server=${KUBE_APISERVER} \
+        --kubeconfig=${K8S_DIR}/kubelet.conf && \
+      kubectl config set-credentials system:node:${NODE} \
+        --client-certificate=${PKI_DIR}/kubelet.pem \
+        --client-key=${PKI_DIR}/kubelet-key.pem \
+        --embed-certs=true \
+        --kubeconfig=${K8S_DIR}/kubelet.conf && \
+      kubectl config set-context system:node:${NODE}@kubernetes \
+        --cluster=kubernetes \
+        --user=system:node:${NODE} \
+        --kubeconfig=${K8S_DIR}/kubelet.conf && \
+      kubectl config use-context system:node:${NODE}@kubernetes \
+        --kubeconfig=${K8S_DIR}/kubelet.conf"
+  done
+  
+  
+  
+  for NODE in ansible-k8s1 ansible-k8s2 ansible-k8s3; do
+    echo "--- $NODE ---"
+    ssh ${NODE} "mkdir -p /var/lib/kubelet /var/log/kubernetes /var/lib/etcd /etc/systemd/system/kubelet.service.d"
+    scp master/var/lib/kubelet/config.yml ${NODE}:/var/lib/kubelet/config.yml
+    scp master/systemd/kubelet.service ${NODE}:/lib/systemd/system/kubelet.service
+    scp master/systemd/10-kubelet.conf ${NODE}:/etc/systemd/system/kubelet.service.d/10-kubelet.conf
+  done
+  
+  
+  for NODE in ansible-k8s1 ansible-k8s2 ansible-k8s3; do
+    ssh ${NODE} "systemctl enable kubelet.service && systemctl restart kubelet.service"
+  done
+  
+  export NODES="ansible-k8s1 ansible-k8s2 ansible-k8s3"
+  
+  
+  
+  ./redis-trib.rb add-node --slave --master-id fdfbfac16aa7d4b6b49ce34b0e6ec24f35da13d9 `dig +short redis-app-3.redis-service.defat.svc.cluster.local`:6379 `dig +short redis-app-0.redis-service.default.svc.cluster.local`:6379
+  
+  
+  ./redis-trib.rb add-node --slave --master-id 2cf980eae0f971f8e41f1f6dc26519701af780d7  `dig +short redis-app-4.redis-service.deflt.svc.cluster.local`:6379 `dig +short redis-app-1.redis-service.default.svc.cluster.local`:6379
+  
+  
+  ./redis-trib.rb add-node --slave --master-id fdfbfac16aa7d4b6b49ce34b0e6ec24f35da13d9  `dig +short redis-app-5.redis-service.deflt.svc.cluster.local`:6379 `dig +short redis-app-2.redis-service.default.svc.cluster.local`:6379
+  
+  
+  ./redis-trib.rb create  `dig +short redis-app-0.redis-service.default.svc.cluster.local`:6379 `dig +short redis-app-1.r         edis-service.default.svc.cluster.local`:6379 `dig +short redis-app-2.redis-service.default.svc.cluster.local`:6379
+  

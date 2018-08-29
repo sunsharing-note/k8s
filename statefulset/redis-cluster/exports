@@ -1,0 +1,6 @@
+/usr/local/k8s/pv1 *(rw,all_squash)
+/usr/local/k8s/pv2 *(rw,all_squash)
+/usr/local/k8s/pv3 *(rw,all_squash)
+/usr/local/k8s/pv4 *(rw,all_squash)
+/usr/local/k8s/pv5 *(rw,all_squash)
+/usr/local/k8s/pv6 *(rw,all_squash)

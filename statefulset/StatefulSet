@@ -15,3 +15,13 @@ StatefulSet是为了解决有状态服务的问题（对应Deployments和Replica
 为了保证数据安全，删除StatefulSet时不会删除Volume
 StatefulSet需要一个Headless Service来定义DNS domain，需要在StatefulSet之前创建好
 目前StatefulSet还没有feature complete，比如更新操作还需要手动patch。
+
+
+在创建StatefulSet之前需要准备的东西，值得注意的是创建顺序非常关键，创建顺序如下：
+
+1、Volume
+2、Persistent Volume
+3、Persistent Volume Claim
+4、Service
+5、StatefulSet
+
