@@ -9,3 +9,6 @@
  
  
  由于是搭建完成之后，再进行的笔记记录，可能不够详尽，但一般问题都不大。可自行解决。
+在10-kubeadm.conf中添加这一行，通过阿里云去转发
+
+Environment="KUBELET_EXTRA_ARGS=--v=2 --fail-swap-on=false --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/k8sth/pause-amd64:3.0"
