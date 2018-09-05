@@ -1,0 +1,5 @@
+# 所需镜像
+curl -s https://www.zhangguanzhang.com/pull |bash -s --   gcr.io/google_containers/metrics-server-amd64:v0.2.1
+curl -s https://www.zhangguanzhang.com/pull |bash -s --  gcr.io/google_containers/addon-resizer:1.8.3
+docker tag gcr.io/google_containers/addon-resizer:1.8.3 k8s.gcr.io/addon-resizer:1.8.3
+docker tag gcr.io/google_containers/metrics-server-amd64:v0.2.1 k8s.gcr.io/metrics-server-amd64:v0.2.1
