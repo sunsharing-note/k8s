@@ -43,4 +43,11 @@
   {
   var str = string 
    }
-`\``
+```
+
+
+|name|age|sex|
+|:-----|:--:|----:|
+|wanger|23  |nan  |
+|lisi  |20  |nv   |
+|wangwu|22  |nan  |
