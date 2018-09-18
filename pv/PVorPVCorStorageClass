@@ -1,7 +1,9 @@
 PersistentVolume（PV）是集群中已由管理员配置的一段网络存储。
 PersistentVolumeClaim（PVC）是用户存储的请求。 它类似于pod。 Pod消耗节点资源，PVC消耗光伏资源。
 StorageClass为管理员提供了一种描述他们提供的存储的“类”的方法。
-
+* ReadWriteOnce – 被单个节点mount为读写rw模式
+* ReadOnlyMany – 被多个节点mount为只读ro模式
+* ReadWriteMany – 被多个节点mount为读写rw模式
 PV是集群中的资源。 PVC是对这些资源的请求，也是对资源的索赔检查。 PV和PVC之间的相互作用遵循这个生命周期:
 
 Provisioning ——-> Binding ——–>Using——>Releasing——>Recycling
