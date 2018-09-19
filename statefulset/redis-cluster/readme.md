@@ -1,4 +1,5 @@
 ##### redis-cluster: [redis-cluster参考链接](https://www.jianshu.com/p/65c4baadf5d9 "redis-cluster参考链接")
+##### redis-trib.rb: [redis-trib.rb参考链接](https://www.cnblogs.com/blueskyli/p/9084548.html "redis-trib.rb参考链接")
 1. 搭建nfs
 2. 测试nfs能否正常挂载
 3. 利用nfs创建pv
