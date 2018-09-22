@@ -1,3 +1,5 @@
+*获取文件命令*：for file in auth-delegator.yaml auth-reader.yaml metrics-apiservice.yaml metrics-server-deployment.yaml metrics-server-service.yaml resource-reader.yaml; do wget https://raw.githubusercontent.com/zhouhua-amei/k8s/master/install_k8s_on_centos7/k8s-metrics-server/k8s-metrics/$file; done
+
 说明: 用于收集node和pod的cpu和memory使用情况。
 
 可使用metrics-server.yaml文件或者k8s-metrics文件夹中的yaml文件。
