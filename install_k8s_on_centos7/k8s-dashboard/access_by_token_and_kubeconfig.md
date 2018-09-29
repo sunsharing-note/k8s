@@ -10,8 +10,8 @@
 + 1、token
 
 通过
-#SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}')
-#kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 即可获取到token,粘贴即可访问。
++ SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}')
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 即可获取到token,粘贴即可访问。
 
 **自定义创建用户** 能够看到所有ns下的资源等
 + kubectl create sa huahua -n kube-system  创建serviceaccount
