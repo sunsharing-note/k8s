@@ -11,5 +11,7 @@
    将token复制粘贴即可进入界面，如进入界面后提示权限问题，则需要执行以下命令
    kubectl create clusterrolebinding kubernetes-dashboard --clusterrole cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
    具体名字视具体情况而定
+   
  2.2 kubeconfig
-  参考：access_by_token_and_kubeconfig
+ 
+  参考：access_by_token_and_kubeconfig.md
