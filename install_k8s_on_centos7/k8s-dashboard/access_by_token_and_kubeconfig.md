@@ -30,20 +30,20 @@
 
 + 2、kubeconfig
 
-kubectl create sa huahua -n default
-kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua
-#SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
-#kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
-通过sa huahua得到secret,再通过secret得到token：kubectl get secret huahua-token-xqsbb -o yaml
-解码token：TOKEN=$(echo token | base64 -d)
-查看当前config：kubectl config view
-设置集群：kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/pki/ca.crt --server="https://192.168.40.200:6443" --embed-certs=true --kubeconfig=/data/kubernetes.conf
-设置user：kubectl config set-credentials huahua --token=$TOKEN --kubeconfig=/data/kubernetes.conf
-设置context: kubectl config set-context huahua@kubernetes --cluster=kubernetes --user=huahua --kubeconfig=/data/kubernetes.conf
-设置当前context: kubectl config use-context huahua@kubernetes --kubeconfig=/data/kubernetes.conf
++ kubectl create sa huahua -n default 创建用户
++ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua 创建rolebinding
++ SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
++ 通过sa huahua得到secret,再通过secret得到token：kubectl get secret huahua-token-xqsbb -o yaml
++ 解码token：TOKEN=$(echo token | base64 -d)
++ 查看当前config：kubectl config view
++ 设置集群：kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/pki/ca.crt --server="https://192.168.40.200:6443" --embed-certs=true --kubeconfig=/data/kubernetes.conf
++ 设置user：kubectl config set-credentials huahua --token=$TOKEN --kubeconfig=/data/kubernetes.conf
++ 设置context: kubectl config set-context huahua@kubernetes --cluster=kubernetes --user=huahua --kubeconfig=/data/kubernetes.conf
++ 设置当前context: kubectl config use-context huahua@kubernetes --kubeconfig=/data/kubernetes.conf
 再将/data/kubernetes.conf放到需要访问dashboard的宿主机，引用即可访问。huahua属于哪个ns,你就只可以访问该ns相关资源。
 
-注：这里是通过token去做的，也可以通过证书去做，使用openssl。
+**注**：这里是通过token去做的，也可以通过证书去做，使用openssl。
 
 
 
