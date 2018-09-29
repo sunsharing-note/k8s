@@ -6,7 +6,7 @@
 
 **注**：因为我们希望通过dashboard去帮我们管理整个集群，所以需要通过serviceaccount，并且需要具有clusterrole相关权限。提供的证书中也必须是serviceaccount。
 
-+ 1、token
+1、token
 
 通过
 + SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}') 获取token
@@ -27,7 +27,7 @@
 
 **注**：为什么是用clusterrole呢？ 因为rolebinding可以绑定clusterrole，这样子sa就只具有集群中自己所在的ns中的资源的相关权限。
 
-+ 2、kubeconfig
+2、kubeconfig
 
 + kubectl create sa huahua -n default 创建用户
 + kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua 创建rolebinding
