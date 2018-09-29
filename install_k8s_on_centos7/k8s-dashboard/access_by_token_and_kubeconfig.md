@@ -13,18 +13,23 @@
 #SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}')
 #kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 即可获取到token,粘贴即可访问。
 
-自定义创建用户
-kubectl create sa huahua -n kube-system
-kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua
-SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
-kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 用此token也可以访问。
+**自定义创建用户** 能够看到所有ns下的资源等
++ kubectl create sa huahua -n kube-system  创建serviceaccount
++ kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua 创建clusterrolebinding
++ SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}') 获取secret
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 获取token进行访问
 
-加入只希望一个用户管理自己所在ns中的资源，那就用rolebinding绑定
-kubectl create sa huahua -n default
-kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua
-为什么是用clusterrole呢？ 因为rolebinding可以绑定clusterrole，这样子sa就只具有集群中自己所在的ns中的资源的相关权限。
+**假如只希望一个用户管理自己所在ns中的资源，那就用rolebinding绑定**
 
-2、kubeconfig
++ kubectl create sa huahua -n default 创建用户
++ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua 创建rolebinding
++ SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}') 获取secret
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 获取token进行访问
+
+**注**：为什么是用clusterrole呢？ 因为rolebinding可以绑定clusterrole，这样子sa就只具有集群中自己所在的ns中的资源的相关权限。
+
++ 2、kubeconfig
+
 kubectl create sa huahua -n default
 kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua
 #SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
