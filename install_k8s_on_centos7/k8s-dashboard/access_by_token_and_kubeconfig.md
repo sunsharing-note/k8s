@@ -5,8 +5,9 @@
 **注**: 访问dashboard时，提示message": "services \"https:kubernetes-dashboard:\" is forbidden: User \"system:anonymous\" cannot get services/proxy in the namespace \"kube-system\"",
 说明该用户无权访问，我们想要访问所有的ns里面的东西，所以给该用户绑定一个clusterrole，执行anonymous-proxy-rbac.yml该文件。再去访问即可。
 
-注：因为我们希望通过dashboard去帮我们管理整个集群，所以需要通过serviceaccount，并且需要具有clusterrole相关权限。提供的证书中也必须是serviceaccount。
-1、token
+**注**：因为我们希望通过dashboard去帮我们管理整个集群，所以需要通过serviceaccount，并且需要具有clusterrole相关权限。提供的证书中也必须是serviceaccount。
+
++ 1、token
 
 通过
 #SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}')
