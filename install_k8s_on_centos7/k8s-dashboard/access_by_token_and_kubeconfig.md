@@ -1,6 +1,5 @@
 + 我们在配置好了dashboard之后，也就是执行了$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
-+ 通过https://{YOUR_VIP}:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/访问dashboard时，可能会出现无法访问或者需要
-+ 通过token或者kubeconfig去访问。这里来说一下如何去获得token或者Kubeconfig
++ 通过https://{YOUR_VIP}:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/访问dashboard时，可能会出现无法访问或者需要通过token或者kubeconfig去访问。这里来说一下如何去获得token或者Kubeconfig
 
 **注**: 访问dashboard时，提示message": "services \"https:kubernetes-dashboard:\" is forbidden: User \"system:anonymous\" cannot get services/proxy in the namespace \"kube-system\"",
 说明该用户无权访问，我们想要访问所有的ns里面的东西，所以给该用户绑定一个clusterrole，执行anonymous-proxy-rbac.yml该文件。再去访问即可。
@@ -10,7 +9,7 @@
 + 1、token
 
 通过
-+ SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}')
++ SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}') 获取token
 + kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 即可获取到token,粘贴即可访问。
 
 **自定义创建用户** 能够看到所有ns下的资源等
