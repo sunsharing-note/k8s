@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc03
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "class-nfs-01"   ###引用storageclass的name
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
