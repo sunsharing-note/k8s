@@ -5,3 +5,4 @@
 * pv.yaml pvc.yaml 为测试nfs是否可用
 * pvc-test.yaml 为测试StorageClass是否可用
 * 过程中需要注意StorageClass在引用时的名字
+* **如果这里的有问题，请参考“我的有道云笔记上k8s的笔记”**
