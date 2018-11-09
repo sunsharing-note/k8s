@@ -1,4 +1,5 @@
-# 升级harbor:https://github.com/goharbor/harbor/blob/master/docs/migration_guide.md
+##### 升级harbor:https://github.com/goharbor/harbor/blob/master/docs/migration_guide.md
+
 **删除harbor中的镜像**：[参考链接](https://blog.csdn.net/felix_yujing/article/details/78626907?locationNum=3&fps=1 "参考链接")
 
 **说明**: 之前没有对docker push镜像做过多的控制和要求，导致现在harbor中镜像占用很大空间，而一些时间久远不再需要的镜像可清除，目前采用以下方式处理：
