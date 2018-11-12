@@ -1,5 +1,9 @@
 全文参考：http://www.cnblogs.com/rongfengliang/p/9661491.html https://github.com/helm/monocular
 
+http://www.cnblogs.com/rongfengliang/p/9653291.html
+
+http://www.cnblogs.com/rongfengliang/p/9661491.html
+
 **说明**: harbor已经集成helm,可以将helm的包push到Harbor
 
 **先安装helm**: 正常安装 没啥特别的
