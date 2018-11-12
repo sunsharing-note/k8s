@@ -2,6 +2,8 @@
 
 * 部署dashboard相关 kubernetes-dashboard.yaml ui-ceshi-rbac.yaml /etc/kubernetes/ssl/basic-auth.csv 
 
+文件位置：[dashboardyaml地址](https://github.com/zhouhua-amei/k8s/tree/master/install_k8s_on_centos7 "dashboard文件")
+
 * 创建sa admin以及clusterrolebinding
 
 ```
