@@ -30,9 +30,9 @@
 2、kubeconfig
 
 + kubectl create sa huahua -n default 创建用户
-+ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua 创建rolebinding
-+ SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
-+ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
++ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua -n default 创建rolebinding
++ ###SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
++ ###kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
 + 通过sa huahua得到secret,再通过secret得到token：kubectl get secret huahua-token-xqsbb -o yaml
 + 解码token：TOKEN=$(echo token | base64 -d)
 + 查看当前config：kubectl config view
