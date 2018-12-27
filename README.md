@@ -8,6 +8,7 @@ ansible一键安装：[传送](https://github.com/gjmzj/kubeasz "传送")
 - Istio1.1.0下的TCP流量控制 控制 http://www.servicemesher.com/blog/raw-tcp-traffic-shaping-with-istio/
 - 服务网格是中间件的终结者吗？者吗？http://www.servicemesher.com/blog/does-the-service-mesh-spell-the-end-for-middleware/
 
+- calico开启IPIP模式，实现跨网段通信。参考: [参考链接](https://www.lijiaocn.com/%E9%A1%B9%E7%9B%AE/2017/09/25/calico-ipip.html "参考链接")
 
 
 **创建证书**:
