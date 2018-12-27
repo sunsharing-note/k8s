@@ -1,0 +1,24 @@
+{
+  "kind": "IPPoolList",
+  "apiVersion": "projectcalico.org/v3",
+  "metadata": {
+    "resourceVersion": "44529013"
+  },
+  "items": [
+    {
+      "kind": "IPPool",
+      "apiVersion": "projectcalico.org/v3",
+      "metadata": {
+        "name": "default-ipv4-ippool",
+        "uid": "5bc295be-3c6f-11e8-bfcb-005056bfa33d",
+        "resourceVersion": "44524037",
+        "creationTimestamp": "2018-04-10T03:29:21Z"
+      },
+      "spec": {
+        "cidr": "172.20.0.0/16",
+        "ipipMode": "Always",
+        "natOutgoing": true
+      }
+    }
+  ]
+}
