@@ -26,3 +26,5 @@ tiller-deploy-7fdbf6766f-9nlwp   1/1       Running   0          18m
 [root@ansible-k8s1 data]# helm version
 Client: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
 Server: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
+
+helm plugin install https://github.com/chartmuseum/helm-push
