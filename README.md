@@ -10,6 +10,27 @@ ansible一键安装：[传送](https://github.com/gjmzj/kubeasz "传送")
 
 - calico开启IPIP模式，实现跨网段通信。参考: [参考链接](https://www.lijiaocn.com/%E9%A1%B9%E7%9B%AE/2017/09/25/calico-ipip.html "参考链接")
 
+```
+k8s的1.12版本镜像：
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/k8s.1-12-1.tar.gz
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/k8s.1-12-4.tar.gz
+
+k8s的1.13版本镜像：
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/k8s.1-13-1.tar.gz
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/k8s.1-13-2.tar.gz
+
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/basic_images_kubeasz_0.4.tar.gz
+
+harbor 1.6.1下载：
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/harbor-offline-installer-v1.6.1.tgz
+
+harbor 1.7.0下载：
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/harbor-offline-installer-v1.7.0.tgz
+
+
+harbor 1.7.1下载：
+https://qjdstatic.oss-cn-hangzhou.aliyuncs.com/clms1/1499762586142/static/dtalk/k8s/harbor-offline-installer-v1.7.1.tgz
+```
 
 **创建证书**:
 
