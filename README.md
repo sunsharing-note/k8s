@@ -1,6 +1,6 @@
 过程中若有镜像无法直接下载，请到dockerhub上查找pull再进行tag: [传送至dockerhub官网](https://hub.docker.com/ "传送至dockerhub")
 
-ansible一键安装：[传送](https://github.com/gjmzj/kubeasz "传送")
+ansible一键安装：[ansible安装k8s](https://github.com/gjmzj/kubeasz "传送")
 
 - 小米正式开源Istio管理面板Naftis is http://www.servicemesher.com/blog/naftis-istio-dashboard-xiaomi/
 - istio-ui——一款开源的简易Istio UI的介绍和使用教程 教程 http://www.servicemesher.com/blog/istio-ui-tutorial/
