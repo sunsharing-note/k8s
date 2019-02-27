@@ -1,5 +1,9 @@
 ### 在kubernetes中部署Heketi和GlusterFS配置动态pv
 
+1.https://blog.51cto.com/newfly/2134514
+2.https://blog.csdn.net/q1403539144/article/details/86614346
+3.https://github.com/gluster/gluster-kubernetes/blob/master/docs/examples/hello_world/README.md
+
 **为什么要使用heketi?**
 
 因为GlusterFS自身并不具备RESTful API，而k8s必须通过Restful API请求来创建pv。
