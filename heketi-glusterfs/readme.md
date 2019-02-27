@@ -1,5 +1,7 @@
 ### 在kubernetes中部署Heketi和GlusterFS配置动态pv
 
+glusterfs介绍：https://baijiahao.baidu.com/s?id=1612194635156434300&wfr=spider&for=pc
+
 1.https://blog.51cto.com/newfly/2134514
 
 2.https://blog.csdn.net/q1403539144/article/details/86614346
