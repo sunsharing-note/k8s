@@ -13,7 +13,7 @@ node3|xxxxx|xxxxx|K8s Node+GlusterFS Node
 
 ##### 部署步骤
 
-1.安装heketi客户端工具，下载地址: ["heketi下载地址"](https://github.com/heketi/heketi/releases)
+1.安装heketi客户端工具，[heketi下载地址](https://github.com/heketi/heketi/releases)
 
 2.在集群内部署glusterfs-server,参考文件：deploy-glusterfs.json.
 
