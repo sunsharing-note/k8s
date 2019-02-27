@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gluster1
+  namespace: router
+  annotations:
+    volume.beta.kubernetes.io/storage-class: gluster-heketi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

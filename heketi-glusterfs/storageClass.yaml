@@ -1,0 +1,13 @@
+[root@node1 heketi]# cat storage-class.yaml 
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gluster-heketi
+provisioner: kubernetes.io/glusterfs
+parameters:
+  resturl: "http://10.10.10.10:8080" #heketi服务端地址
+  restuser: "admin"                          
+  volumetype: "replicate:3"
+  clusterid: "1af8eafbabc0ae0edebcacda5d5817bc" #glusterfs集群id
+  gidMin: "40000"
+  gidMax: "50000"
