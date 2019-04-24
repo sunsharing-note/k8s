@@ -1,5 +1,7 @@
 过程中若有镜像无法直接下载，请到dockerhub上查找pull再进行tag: [传送至dockerhub官网](https://hub.docker.com/ "传送至dockerhub")
 
+prome监控kubernetes：https://blog.51cto.com/wangzhijian/2096182
+
 ansible一键安装：[ansible安装k8s](https://github.com/gjmzj/kubeasz "传送")
 
 - 小米正式开源Istio管理面板Naftis is http://www.servicemesher.com/blog/naftis-istio-dashboard-xiaomi/
