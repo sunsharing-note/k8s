@@ -1,0 +1,22 @@
+{
+  "kind": "Endpoints",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "glusterfs-cluster-mysql",
+    "namespace": "router" 
+  },
+  "subsets": [
+    {
+      "addresses": [
+        {
+          "ip": "127.0.0.1"
+        }
+      ],
+      "ports": [
+        {
+          "port": 3307
+        }
+      ]
+    }
+  ]
+}
