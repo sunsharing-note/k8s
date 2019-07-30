@@ -14,7 +14,7 @@
 
 **自定义创建用户** 能够看到所有ns下的资源等
 + kubectl create sa huahua -n kube-system  创建serviceaccount
-+ kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua 创建clusterrolebinding
++ kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua -n kube-system 创建clusterrolebinding
 + SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}') 获取secret
 + kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 获取token进行访问
 
