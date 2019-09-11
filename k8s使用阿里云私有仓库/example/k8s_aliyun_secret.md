@@ -19,15 +19,17 @@ kubectl create secret docker-registry regsecret \
 
 ### 解释：
 其中:
-regsecret: 指定密钥的键名称, 可自行定义
---docker-server: 指定docker仓库地址
---docker-username: 指定docker仓库账号
---docker-password: 指定docker仓库密码
---docker-email: 指定邮件地址(选填)
---namespace=xxx 如果需要指定ns则需要加上这个参数
+1. regsecret: 指定密钥的键名称, 可自行定义
+2. --docker-server: 指定docker仓库地址
+3. --docker-username: 指定docker仓库账号
+4. --docker-password: 指定docker仓库密码
+5. --docker-email: 指定邮件地址(选填)
+6. --namespace=xxx 如果需要指定ns则需要加上这个参数
 
 #### 查看secret
+```
 kubectl get secret
+```
 
 ## 3、yaml文件加上最重要的两个参数
 **imagePullSecrets:**
