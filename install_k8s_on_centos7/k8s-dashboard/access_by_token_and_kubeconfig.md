@@ -10,29 +10,29 @@
 
 通过
 + SECRET=$(kubectl -n kube-system get sa kubernetes-dashboard -o yaml | awk '/dashboard-token/ {print $3}') 获取token
-+ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 即可获取到token,粘贴即可访问。
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token/{print $2}' 即可获取到token,粘贴即可访问。
 
 **自定义创建用户** 能够看到所有ns下的资源等
 + kubectl create sa huahua -n kube-system  创建serviceaccount
-+ kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua -n kube-system 创建clusterrolebinding
++ kubectl create clusterrolebinding huahua --clusterrole=cluster-admin --serviceaccount=kube-system:huahua 创建clusterrolebinding
 + SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}') 获取secret
-+ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 获取token进行访问
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token/{print $2}' 获取token进行访问
 
 **假如只希望一个用户管理自己所在ns中的资源，那就用rolebinding绑定**
 
 + kubectl create sa huahua -n default 创建用户
 + kubectl create rolebinding huahua --clusterrole=cluster-admin --serviceaccount=default:huahua 创建rolebinding
 + SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}') 获取secret
-+ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}' 获取token进行访问
++ kubectl -n kube-system describe secrets ${SECRET} | awk '/token/{print $2}' 获取token进行访问
 
 **注**：为什么是用clusterrole呢？ 因为rolebinding可以绑定clusterrole，这样子sa就只具有集群中自己所在的ns中的资源的相关权限。
 
 2、kubeconfig
 
 + kubectl create sa huahua -n default 创建用户
-+ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua -n default 创建rolebinding
++ kubectl create rolebinding huahua --clusterrole=admin --serviceaccount=default:huahua 创建rolebinding
 + ###SECRET=$(kubectl -n kube-system get sa huahua -o yaml | awk '/dashboard-token/ {print $3}')
-+ ###kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
++ ###kubectl -n kube-system describe secrets ${SECRET} | awk '/token/{print $2}'
 + 通过sa huahua得到secret,再通过secret得到token：kubectl get secret huahua-token-xqsbb -o yaml
 + 解码token：TOKEN=$(echo token | base64 -d)
 + 查看当前config：kubectl config view
